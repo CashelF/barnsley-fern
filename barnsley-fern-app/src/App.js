@@ -7,11 +7,11 @@ function App() {
     <div className="App">
       <BarnsleyFern />
       <div className="info-overlay">
-        <h1>Infinitely Zoomable Barnsley Fern</h1>
+        <h1>Interactive Barnsley Fern</h1>
         <div className="instructions">
           <p>Scroll to zoom in/out</p>
           <p>Drag to pan</p>
-          <p>Click "Reset View" to return to initial state</p>
+          <p>Click "Edit Coefficients" to modify the fern's equations</p>
         </div>
       </div>
     </div>
