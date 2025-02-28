@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/Dermetric/static/css/main.96fa5315.css",
+    "main.js": "/Dermetric/static/js/main.ea2f9881.js",
+    "static/js/453.c3ca30e6.chunk.js": "/Dermetric/static/js/453.c3ca30e6.chunk.js",
+    "index.html": "/Dermetric/index.html",
+    "main.96fa5315.css.map": "/Dermetric/static/css/main.96fa5315.css.map",
+    "main.ea2f9881.js.map": "/Dermetric/static/js/main.ea2f9881.js.map",
+    "453.c3ca30e6.chunk.js.map": "/Dermetric/static/js/453.c3ca30e6.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.96fa5315.css",
+    "static/js/main.ea2f9881.js"
+  ]
+}
