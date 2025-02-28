@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "/barnsley-fern/static/css/main.5d80c0f0.css",
-    "main.js": "/barnsley-fern/static/js/main.87f3568b.js",
+    "main.js": "/barnsley-fern/static/js/main.5029db34.js",
     "static/js/453.b73c735f.chunk.js": "/barnsley-fern/static/js/453.b73c735f.chunk.js",
     "index.html": "/barnsley-fern/index.html",
     "main.5d80c0f0.css.map": "/barnsley-fern/static/css/main.5d80c0f0.css.map",
-    "main.87f3568b.js.map": "/barnsley-fern/static/js/main.87f3568b.js.map",
+    "main.5029db34.js.map": "/barnsley-fern/static/js/main.5029db34.js.map",
     "453.b73c735f.chunk.js.map": "/barnsley-fern/static/js/453.b73c735f.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.5d80c0f0.css",
-    "static/js/main.87f3568b.js"
+    "static/js/main.5029db34.js"
   ]
 }
