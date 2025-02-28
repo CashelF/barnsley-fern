@@ -1,6 +1,6 @@
 {
-  "name": "barnsley-fern-app",
-  "homepage": "https://CashelF.github.io/barnsley",
+  "name": "barnsley-fern",
+  "homepage": "https://CashelF.github.io/barnsley-fern",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
