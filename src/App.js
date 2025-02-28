@@ -22,6 +22,7 @@ function App() {
           <div className="instructions">
             <p>Scroll to zoom in/out</p>
             <p>Drag to pan</p>
+            <p>Double-tap + drag to zoom on mobile</p>
             <p>Click "Edit Coefficients" to modify the fern's equations</p>
           </div>
         </div>

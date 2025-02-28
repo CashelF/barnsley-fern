@@ -22,6 +22,13 @@ const BarnsleyFern = () => {
   const [lastTouchDistance, setLastTouchDistance] = useState(null);
   const [lastZoomCenter, setLastZoomCenter] = useState({ x: 0, y: 0 });
   
+  // Double-tap zoom states
+  const [lastTap, setLastTap] = useState(0);
+  const [isZoomDrag, setIsZoomDrag] = useState(false);
+  const [zoomDragOrigin, setZoomDragOrigin] = useState({ x: 0, y: 0 });
+  const [zoomDragFactor, setZoomDragFactor] = useState(1);
+  const doubleTapDelay = 300; // ms between taps to be considered a double-tap
+  
   // Coefficient editor states
   const [showCoefficients, setShowCoefficients] = useState(false);
   const [coefficients, setCoefficients] = useState(defaultCoefficients);
@@ -203,20 +210,78 @@ const BarnsleyFern = () => {
     };
   };
 
+  // Function to perform zoom based on position and factor
+  const performZoom = (centerX, centerY, zoomFactor) => {
+    // Get canvas dimensions
+    const rect = canvasRef.current.getBoundingClientRect();
+    
+    // Convert touch center to canvas coordinates
+    const canvasX = centerX - rect.left;
+    const canvasY = centerY - rect.top;
+    
+    // Calculate world coordinates of touch center
+    const centerCanvasX = rect.width / 2;
+    const centerCanvasY = rect.height / 2;
+    
+    const oldWorldTouchX = (canvasX - centerCanvasX - offsetX) / scale;
+    const oldWorldTouchY = (centerCanvasY - canvasY + offsetY) / scale;
+    
+    // Calculate new scale
+    const newScale = scale * zoomFactor;
+    
+    // Calculate new world coordinates and adjust offset
+    const newWorldTouchX = (canvasX - centerCanvasX - offsetX) / newScale;
+    const newWorldTouchY = (centerCanvasY - canvasY + offsetY) / newScale;
+    
+    // Adjust offset to keep the point under the touch fixed
+    const offsetXDelta = (oldWorldTouchX - newWorldTouchX) * newScale;
+    const offsetYDelta = (oldWorldTouchY - newWorldTouchY) * newScale;
+    
+    // Update state
+    setScale(newScale);
+    setOffsetX(offsetX + offsetXDelta);
+    setOffsetY(offsetY + offsetYDelta);
+    
+    // Increase point count when zooming in
+    if (newScale > 200 && renderCount < 50000) {
+      setRenderCount(50000);
+    } else if (newScale > 1000 && renderCount < 100000) {
+      setRenderCount(100000);
+    }
+  };
+
   // Handle touch events for mobile devices
   const handleTouchStart = (e) => {
     e.preventDefault(); // Prevent default browser actions
     
+    const now = Date.now();
+    
     if (e.touches.length === 1) {
-      // Single touch - prepare for dragging
-      setIsDragging(true);
+      // Check if this is a double tap
+      if (now - lastTap < doubleTapDelay) {
+        // This is a double tap - initialize zoom drag mode
+        setIsZoomDrag(true);
+        setZoomDragOrigin({
+          x: e.touches[0].clientX,
+          y: e.touches[0].clientY
+        });
+        setZoomDragFactor(1); // Start at no zoom change
+      } else {
+        // Single touch - prepare for normal dragging
+        setIsDragging(true);
+        setIsZoomDrag(false);
+      }
+      
+      // Record touch position and time
       setStartDragX(e.touches[0].clientX);
       setStartDragY(e.touches[0].clientY);
+      setLastTap(now);
       setLastTouchDistance(null);
     } 
     else if (e.touches.length === 2) {
       // Two touches - prepare for pinch zoom
       setIsDragging(false);
+      setIsZoomDrag(false);
       setLastTouchDistance(getTouchDistance(e.touches));
       setLastZoomCenter(getTouchCenter(e.touches));
     }
@@ -225,19 +290,39 @@ const BarnsleyFern = () => {
   const handleTouchMove = (e) => {
     e.preventDefault(); // Prevent default browser actions like scrolling
     
-    if (e.touches.length === 1 && isDragging) {
-      // Handle single touch drag (panning)
-      const deltaX = e.touches[0].clientX - startDragX;
-      const deltaY = e.touches[0].clientY - startDragY;
-      
-      setOffsetX(offsetX + deltaX);
-      setOffsetY(offsetY + deltaY);
-      
-      setStartDragX(e.touches[0].clientX);
-      setStartDragY(e.touches[0].clientY);
+    if (e.touches.length === 1) {
+      if (isZoomDrag) {
+        // Handle zoom dragging (drag up to zoom in, down to zoom out)
+        const touchY = e.touches[0].clientY;
+        const deltaY = touchY - startDragY;
+        
+        // Calculate zoom factor based on vertical movement
+        // Moving up (negative deltaY) zooms in, moving down zooms out
+        // Use a gentle factor to control zoom speed
+        const newZoomFactor = Math.max(0.5, Math.min(2.0, 1 - deltaY * 0.01));
+        setZoomDragFactor(newZoomFactor);
+        
+        // Perform the zoom centered on the initial touch point
+        performZoom(zoomDragOrigin.x, zoomDragOrigin.y, newZoomFactor);
+        
+        // Update drag position for next move
+        setStartDragX(e.touches[0].clientX);
+        setStartDragY(e.touches[0].clientY);
+      } 
+      else if (isDragging) {
+        // Handle regular panning
+        const deltaX = e.touches[0].clientX - startDragX;
+        const deltaY = e.touches[0].clientY - startDragY;
+        
+        setOffsetX(offsetX + deltaX);
+        setOffsetY(offsetY + deltaY);
+        
+        setStartDragX(e.touches[0].clientX);
+        setStartDragY(e.touches[0].clientY);
+      }
     } 
     else if (e.touches.length === 2) {
-      // Handle pinch zoom
+      // Handle standard pinch zoom
       const newDistance = getTouchDistance(e.touches);
       const newCenter = getTouchCenter(e.touches);
       
@@ -288,13 +373,15 @@ const BarnsleyFern = () => {
   };
 
   const handleTouchEnd = (e) => {
-    // Reset dragging state only when all touches are gone or one left
+    // Reset interaction states
     if (e.touches.length === 0) {
       setIsDragging(false);
+      setIsZoomDrag(false);
       setLastTouchDistance(null);
     } else if (e.touches.length === 1) {
       // If one touch remains after pinch, start dragging from there
       setIsDragging(true);
+      setIsZoomDrag(false);
       setStartDragX(e.touches[0].clientX);
       setStartDragY(e.touches[0].clientY);
       setLastTouchDistance(null);
