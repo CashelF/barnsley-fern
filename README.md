@@ -1,6 +1,6 @@
-# Barnsley Fern - Infinite Zoom
+# Barnsley Fern
 
-An interactive visualization of the Barnsley Fern fractal with infinite zoom capability.
+An interactive visualization of the Barnsley Fern fractal with infinite zoom capability. Try it out at cashel.dev/barnsley-fern
 
 ## About the Barnsley Fern
 
