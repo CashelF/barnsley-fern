@@ -34,22 +34,17 @@ The Barnsley Fern is a fractal named after the British mathematician Michael Bar
    git clone https://github.com/yourusername/barnsley-fern.git
    ```
 
-2. Navigate to the project directory:
-   ```
-   cd barnsley-fern-app
-   ```
-
-3. Install dependencies:
+2. Install dependencies:
    ```
    npm install
    ```
 
-4. Start the development server:
+3. Start the development server:
    ```
    npm start
    ```
 
-5. Open your browser and visit: `http://localhost:3000`
+4. Open your browser and visit: `http://localhost:3000`
 
 ## How It Works
 
